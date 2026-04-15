@@ -1,0 +1,460 @@
+:root {
+  --paper: #faf9f3;
+  --card: rgba(255, 255, 255, 0.9);
+  --line: rgba(127, 155, 126, 0.2);
+  --shadow: 0 20px 70px rgba(55, 68, 58, 0.12);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at top, rgba(169, 195, 167, 0.18), transparent 32%),
+    linear-gradient(180deg, #f8f6ef 0%, #f5f4ec 100%);
+  color: #243228;
+  font-family: Georgia, "Times New Roman", serif;
+}
+
+a {
+  color: inherit;
+}
+
+.landing-page,
+.admin-page,
+.invitation-shell {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 16px;
+}
+
+.landing-card,
+.admin-card,
+.invitation-card {
+  width: min(100%, 860px);
+  background: var(--card);
+  border: 1px solid rgba(255, 255, 255, 0.95);
+  border-radius: 28px;
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(18px);
+}
+
+.landing-card,
+.admin-card {
+  padding: 32px;
+}
+
+.landing-card h1,
+.admin-card h1 {
+  margin: 0 0 16px;
+  font-size: clamp(2rem, 4vw, 3.25rem);
+  line-height: 1;
+}
+
+.landing-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.landing-links a {
+  padding: 12px 18px;
+  border-radius: 999px;
+  border: 1px solid rgba(36, 50, 40, 0.16);
+  text-decoration: none;
+}
+
+.invitation-shell {
+  color: var(--text-main);
+}
+
+.invitation-card {
+  max-width: 560px;
+  padding: 28px 20px 30px;
+  position: relative;
+  overflow: hidden;
+}
+
+.invitation-card::before {
+  content: "";
+  position: absolute;
+  inset: 14px;
+  border-radius: 24px;
+  border: 1px solid rgba(127, 155, 126, 0.12);
+  box-shadow: inset 0 0 60px var(--glow);
+  pointer-events: none;
+}
+
+.eyebrow,
+.section-kicker {
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.26em;
+  font-family: Arial, sans-serif;
+  font-size: 0.68rem;
+  color: rgba(36, 50, 40, 0.58);
+  text-align: center;
+}
+
+.eyebrow.small {
+  margin-top: 6px;
+}
+
+.guest-name {
+  margin: 18px 0 20px;
+  text-align: center;
+  color: var(--accent);
+  font-size: clamp(2rem, 6vw, 3.5rem);
+  font-weight: 500;
+  line-height: 1;
+}
+
+.family-grid {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 16px;
+  align-items: center;
+  margin: 24px 0;
+}
+
+.family-grid h2 {
+  margin: 0;
+  text-align: center;
+  font-size: clamp(2rem, 5vw, 3rem);
+  font-weight: 500;
+  line-height: 0.95;
+}
+
+.family-grid p {
+  margin: 10px 0 0;
+  text-align: center;
+  font-size: 1rem;
+  color: var(--accent);
+}
+
+.divider-heart {
+  color: var(--accent);
+  font-size: 1.4rem;
+  align-self: center;
+}
+
+.honor-line {
+  margin: 26px 0 18px;
+}
+
+.date-card {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  border: 1px solid rgba(127, 155, 126, 0.2);
+  border-radius: 16px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.94);
+}
+
+.date-card > div {
+  padding: 16px 12px;
+  text-align: center;
+}
+
+.date-card span {
+  display: block;
+  text-transform: uppercase;
+  color: var(--accent);
+  font-family: Arial, sans-serif;
+  font-size: 0.88rem;
+  letter-spacing: 0.12em;
+}
+
+.date-card strong {
+  display: block;
+  margin-top: 6px;
+  font-family: Arial, sans-serif;
+  font-size: 0.88rem;
+  color: rgba(36, 50, 40, 0.72);
+}
+
+.date-number {
+  display: grid;
+  place-items: center;
+  min-width: 94px;
+  border-inline: 1px solid rgba(127, 155, 126, 0.2);
+  font-size: clamp(3rem, 10vw, 4.5rem);
+  color: var(--accent);
+  font-weight: 700;
+  line-height: 1;
+}
+
+.alt-calendar,
+.venue-block p,
+.headcount-help,
+.state-text,
+.saved-state span,
+.error-text {
+  margin: 0;
+  text-align: center;
+  font-family: Arial, sans-serif;
+  color: rgba(36, 50, 40, 0.72);
+}
+
+.alt-calendar {
+  margin-top: 14px;
+  color: var(--accent);
+}
+
+.venue-block {
+  margin-top: 18px;
+  text-align: center;
+}
+
+.venue-block h3 {
+  margin: 0;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  font-size: 1.35rem;
+}
+
+.section-block {
+  margin-top: 28px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(127, 155, 126, 0.18);
+}
+
+.countdown-grid {
+  margin-top: 18px;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.countdown-box {
+  border-radius: 14px;
+  border: 1px solid rgba(127, 155, 126, 0.2);
+  background: rgba(255, 255, 255, 0.95);
+  padding: 14px 8px;
+  text-align: center;
+}
+
+.countdown-box strong {
+  display: block;
+  font-size: 1.8rem;
+}
+
+.countdown-box span {
+  display: block;
+  margin-top: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  font-family: Arial, sans-serif;
+  font-size: 0.64rem;
+  color: rgba(36, 50, 40, 0.6);
+}
+
+.headcount-panel {
+  margin-top: 18px;
+}
+
+.headcount-label {
+  display: block;
+  margin-bottom: 8px;
+  text-align: center;
+  font-family: Arial, sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  font-size: 0.7rem;
+  color: rgba(36, 50, 40, 0.65);
+}
+
+.headcount-input {
+  display: block;
+  width: 100%;
+  max-width: 180px;
+  margin: 0 auto;
+  padding: 14px 16px;
+  border-radius: 14px;
+  border: 1px solid rgba(127, 155, 126, 0.26);
+  text-align: center;
+  font-size: 1.15rem;
+  background: rgba(255, 255, 255, 0.92);
+}
+
+.headcount-input-error {
+  border-color: #f0a8a8;
+}
+
+.headcount-help {
+  margin-top: 10px;
+  font-size: 0.84rem;
+}
+
+.saved-state {
+  margin-top: 16px;
+  display: grid;
+  gap: 6px;
+  justify-items: center;
+}
+
+.saved-state strong {
+  color: var(--accent);
+}
+
+.state-text {
+  margin-top: 14px;
+  font-size: 0.92rem;
+}
+
+.error-text {
+  margin-top: 14px;
+  color: #c65959;
+  font-size: 0.92rem;
+}
+
+.rsvp-actions {
+  margin-top: 18px;
+  display: grid;
+  gap: 12px;
+}
+
+.rsvp-button {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 14px;
+  align-items: center;
+  padding: 18px 18px;
+  border-radius: 18px;
+  border: 1px solid rgba(127, 155, 126, 0.24);
+  background: rgba(255, 255, 255, 0.94);
+  text-align: left;
+  cursor: pointer;
+  transition: transform 120ms ease, box-shadow 120ms ease, border-color 120ms ease;
+}
+
+.rsvp-button strong,
+.rsvp-button small {
+  display: block;
+}
+
+.rsvp-button small {
+  margin-top: 4px;
+  font-family: Arial, sans-serif;
+  color: rgba(36, 50, 40, 0.64);
+}
+
+.rsvp-button:hover:enabled {
+  transform: translateY(-1px);
+  box-shadow: 0 14px 32px rgba(36, 50, 40, 0.08);
+}
+
+.rsvp-button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.rsvp-button.accept {
+  border-color: #afe8bf;
+}
+
+.rsvp-button.decline {
+  border-color: #f2c2c2;
+}
+
+.button-icon {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  background: rgba(127, 155, 126, 0.12);
+  color: var(--accent);
+  font-family: Arial, sans-serif;
+  font-size: 1.5rem;
+}
+
+.rsvp-button.decline .button-icon {
+  background: rgba(242, 194, 194, 0.22);
+  color: #dc7c7c;
+}
+
+.admin-metrics {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.admin-metrics div {
+  padding: 18px 12px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.78);
+  border: 1px solid rgba(36, 50, 40, 0.08);
+  text-align: center;
+}
+
+.admin-metrics strong,
+.admin-metrics span {
+  display: block;
+}
+
+.admin-metrics strong {
+  font-size: 2rem;
+}
+
+.admin-metrics span {
+  margin-top: 6px;
+  font-family: Arial, sans-serif;
+  color: rgba(36, 50, 40, 0.64);
+}
+
+.admin-table-wrap {
+  margin-top: 24px;
+  overflow-x: auto;
+}
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: Arial, sans-serif;
+}
+
+.admin-table th,
+.admin-table td {
+  padding: 14px 12px;
+  border-bottom: 1px solid rgba(36, 50, 40, 0.08);
+  text-align: left;
+}
+
+@media (max-width: 640px) {
+  .invitation-card {
+    padding: 22px 14px 24px;
+  }
+
+  .family-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .divider-heart {
+    justify-self: center;
+  }
+
+  .date-card,
+  .admin-metrics {
+    grid-template-columns: 1fr;
+  }
+
+  .date-number {
+    border-inline: none;
+    border-block: 1px solid rgba(127, 155, 126, 0.2);
+    min-width: unset;
+    padding: 18px 0;
+  }
+}
