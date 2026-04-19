@@ -8,6 +8,7 @@ import type { GuestInvite, RsvpRecord, WeddingConfig } from "@/lib/types";
 type Props = {
   wedding: WeddingConfig;
   guest: GuestInvite;
+  inviteToken: string;
   existingRsvp: RsvpRecord | null;
 };
 
@@ -17,7 +18,7 @@ type SavedState = {
   submittedAt?: string;
 };
 
-export function RsvpForm({ wedding, guest, existingRsvp }: Props) {
+export function RsvpForm({ wedding, guest, inviteToken, existingRsvp }: Props) {
   const [headcount, setHeadcount] = useState(existingRsvp?.headcount ?? 0);
   const [error, setError] = useState<string | null>(null);
   const [saved, setSaved] = useState<SavedState | null>(
@@ -49,6 +50,7 @@ export function RsvpForm({ wedding, guest, existingRsvp }: Props) {
         },
         body: JSON.stringify({
           guestSlug: guest.guestSlug,
+          inviteToken,
           status,
           headcount
         })

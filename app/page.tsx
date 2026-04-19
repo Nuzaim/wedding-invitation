@@ -1,8 +1,10 @@
 import Link from "next/link";
+import { createInviteToken } from "@/lib/invite-signature";
 import { sampleGuests } from "@/lib/sample-data";
 
 export default function HomePage() {
   const demoGuest = sampleGuests[0];
+  const demoInviteToken = createInviteToken(demoGuest.guestName);
 
   return (
     <main className="landing-page">
@@ -14,7 +16,7 @@ export default function HomePage() {
           headcount rules for one wedding.
         </p>
         <div className="landing-links">
-          <Link href={`/${demoGuest.guestSlug}`}>Open demo invitation</Link>
+          <Link href={`/${demoGuest.guestSlug}/${demoInviteToken}`}>Open demo invitation</Link>
           <Link href="/admin">Open admin summary</Link>
         </div>
       </div>

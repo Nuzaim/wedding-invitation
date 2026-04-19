@@ -3,6 +3,7 @@ import type { GuestInvite, RsvpStatus, WeddingConfig } from "@/lib/types";
 
 export const rsvpSchema = z.object({
   guestSlug: z.string().min(1),
+  inviteToken: z.string().min(1),
   status: z.enum(["attending", "declined"]),
   headcount: z.coerce.number().int().min(0)
 });

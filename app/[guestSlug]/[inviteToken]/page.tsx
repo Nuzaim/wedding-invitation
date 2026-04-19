@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import type { CSSProperties } from "react";
 import { Countdown } from "@/components/countdown";
 import { RsvpForm } from "@/components/rsvp-form";
+import { isInviteTokenValid } from "@/lib/invite-signature";
 import { getInvitePageData } from "@/lib/google-sheets";
 import { formatEventDate, getCountdownParts } from "@/lib/utils";
 
@@ -13,7 +14,7 @@ type Props = {
 };
 
 export default async function InvitationPage({ params }: Props) {
-  const { guestSlug } = await params;
+  const { guestSlug, inviteToken } = await params;
   const data = await getInvitePageData(guestSlug);
 
   if (!data) {
@@ -21,6 +22,10 @@ export default async function InvitationPage({ params }: Props) {
   }
 
   const { wedding, guest, existingRsvp } = data;
+
+  if (!isInviteTokenValid(guest.guestName, inviteToken)) {
+    notFound();
+  }
 
   const eventDate = formatEventDate(wedding.eventDateIso);
   const countdown = getCountdownParts(wedding.eventDateIso);
@@ -85,6 +90,7 @@ export default async function InvitationPage({ params }: Props) {
         <RsvpForm
           wedding={wedding}
           guest={guest}
+          inviteToken={inviteToken}
           existingRsvp={existingRsvp}
         />
       </section>
