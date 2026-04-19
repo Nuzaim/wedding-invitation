@@ -1,16 +1,8 @@
 import { notFound } from "next/navigation";
 import { getWeddingDashboard } from "@/lib/google-sheets";
-import { sampleWedding } from "@/lib/sample-data";
 
-type Props = {
-  searchParams: Promise<{
-    wedding?: string;
-  }>;
-};
-
-export default async function AdminPage({ searchParams }: Props) {
-  const { wedding = sampleWedding.weddingSlug } = await searchParams;
-  const dashboard = await getWeddingDashboard(wedding);
+export default async function AdminPage() {
+  const dashboard = await getWeddingDashboard();
 
   if (!dashboard) {
     notFound();

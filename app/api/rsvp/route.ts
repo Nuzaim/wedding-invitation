@@ -10,8 +10,8 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Invalid RSVP payload." }, { status: 400 });
   }
 
-  const { weddingSlug, guestSlug, status, headcount } = parsed.data;
-  const inviteData = await getInvitePageData(weddingSlug, guestSlug);
+  const { guestSlug, status, headcount } = parsed.data;
+  const inviteData = await getInvitePageData(guestSlug);
 
   if (!inviteData) {
     return NextResponse.json({ error: "Invitation not found." }, { status: 404 });
@@ -24,7 +24,6 @@ export async function POST(request: Request) {
   }
 
   const record = await saveRsvp({
-    weddingSlug,
     guestSlug,
     guestName: inviteData.guest.guestName,
     status,

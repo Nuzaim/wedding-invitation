@@ -15,7 +15,7 @@ type SheetRow = Record<string, string>;
 const RANGES = {
   weddings: process.env.GOOGLE_SHEETS_WEDDINGS_RANGE ?? "Weddings!A:Z",
   guests: process.env.GOOGLE_SHEETS_GUESTS_RANGE ?? "Guests!A:Z",
-  rsvps: process.env.GOOGLE_SHEETS_RSVPS_RANGE ?? "RSVPs!A:Z"
+  rsvps: process.env.GOOGLE_SHEETS_RSVPS_RANGE ?? "RSVPs!A:E"
 };
 
 function hasGoogleSheetsConfig() {
@@ -80,7 +80,6 @@ async function getRows(range: string): Promise<Array<{ rowNumber: number; row: S
 
 function mapWedding(row: SheetRow): WeddingConfig {
   return {
-    weddingSlug: row.weddingSlug,
     inviteTitle: row.inviteTitle || "Exclusive Invitation For",
     inviteSubtitle: row.inviteSubtitle || "Together with their families",
     guestHonorLine: row.guestHonorLine || "Request the honor of your presence",
@@ -105,7 +104,6 @@ function mapWedding(row: SheetRow): WeddingConfig {
 
 function mapGuest(row: SheetRow): GuestInvite {
   return {
-    weddingSlug: row.weddingSlug,
     guestSlug: row.guestSlug,
     guestName: row.guestName,
     maxHeadcount: parseNumber(row.maxHeadcount, 1),
@@ -116,7 +114,6 @@ function mapGuest(row: SheetRow): GuestInvite {
 
 function mapRsvp(row: SheetRow, rowNumber?: number): RsvpRecord {
   return {
-    weddingSlug: row.weddingSlug,
     guestSlug: row.guestSlug,
     guestName: row.guestName,
     status: row.status === "declined" ? "declined" : "attending",
@@ -153,49 +150,40 @@ async function loadRsvps() {
   return rows.map(({ row, rowNumber }) => mapRsvp(row, rowNumber));
 }
 
-export async function getInvitePageData(
-  weddingSlug: string,
-  guestSlug: string
-): Promise<InvitePageData | null> {
+export async function getInvitePageData(guestSlug: string): Promise<InvitePageData | null> {
   const [weddings, guests, rsvps] = await Promise.all([
     loadWeddings(),
     loadGuests(),
     loadRsvps()
   ]);
 
-  const wedding = weddings.find((item) => item.weddingSlug === weddingSlug && item.active);
-  const guest = guests.find(
-    (item) =>
-      item.weddingSlug === weddingSlug &&
-      item.guestSlug === guestSlug &&
-      item.active
-  );
+  const wedding = weddings.find((item) => item.active);
+  const guest = guests.find((item) => item.guestSlug === guestSlug && item.active);
 
   if (!wedding || !guest) {
     return null;
   }
 
-  const existingRsvp =
-    rsvps.find((item) => item.weddingSlug === weddingSlug && item.guestSlug === guestSlug) ?? null;
+  const existingRsvp = rsvps.find((item) => item.guestSlug === guestSlug) ?? null;
 
   return { wedding, guest, existingRsvp };
 }
 
-export async function getWeddingDashboard(weddingSlug: string): Promise<DashboardSummary | null> {
+export async function getWeddingDashboard(): Promise<DashboardSummary | null> {
   const [weddings, guests, rsvps] = await Promise.all([
     loadWeddings(),
     loadGuests(),
     loadRsvps()
   ]);
 
-  const wedding = weddings.find((item) => item.weddingSlug === weddingSlug && item.active);
+  const wedding = weddings.find((item) => item.active);
 
   if (!wedding) {
     return null;
   }
 
-  const weddingGuests = guests.filter((guest) => guest.weddingSlug === weddingSlug);
-  const weddingRsvps = rsvps.filter((rsvp) => rsvp.weddingSlug === weddingSlug);
+  const weddingGuests = guests.filter((guest) => guest.active);
+  const weddingRsvps = rsvps;
   const attending = weddingRsvps.filter((rsvp) => rsvp.status === "attending");
   const declined = weddingRsvps.filter((rsvp) => rsvp.status === "declined");
   const pendingCount = Math.max(weddingGuests.length - weddingRsvps.length, 0);
@@ -220,12 +208,10 @@ export async function saveRsvp(submission: RsvpSubmission) {
   const spreadsheetId = process.env.GOOGLE_SHEETS_SPREADSHEET_ID!;
   const existingRows = await getRows(RANGES.rsvps);
   const matchingRow = existingRows.find(
-    ({ row }) =>
-      row.weddingSlug === submission.weddingSlug && row.guestSlug === submission.guestSlug
+    ({ row }) => row.guestSlug === submission.guestSlug
   );
 
   const recordValues = [
-    submission.weddingSlug,
     submission.guestSlug,
     submission.guestName,
     submission.status,
@@ -236,7 +222,7 @@ export async function saveRsvp(submission: RsvpSubmission) {
   if (matchingRow) {
     await sheets.spreadsheets.values.update({
       spreadsheetId,
-      range: `RSVPs!A${matchingRow.rowNumber}:F${matchingRow.rowNumber}`,
+      range: `RSVPs!A${matchingRow.rowNumber}:E${matchingRow.rowNumber}`,
       valueInputOption: "USER_ENTERED",
       requestBody: {
         values: [recordValues]
@@ -245,7 +231,7 @@ export async function saveRsvp(submission: RsvpSubmission) {
   } else {
     await sheets.spreadsheets.values.append({
       spreadsheetId,
-      range: "RSVPs!A:F",
+      range: "RSVPs!A:E",
       valueInputOption: "USER_ENTERED",
       requestBody: {
         values: [recordValues]

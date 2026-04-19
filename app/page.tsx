@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { sampleGuests, sampleWedding } from "@/lib/sample-data";
+import { sampleGuests } from "@/lib/sample-data";
 
 export default function HomePage() {
   const demoGuest = sampleGuests[0];
@@ -7,22 +7,15 @@ export default function HomePage() {
   return (
     <main className="landing-page">
       <div className="landing-card">
-        <p className="section-kicker">Reusable Wedding Template</p>
+        <p className="section-kicker">Wedding Invitation</p>
         <h1>Guest-personalized wedding invitations with RSVP tracking</h1>
         <p>
-          This starter renders invitation pages from Google Sheets and accepts RSVPs with conditional
-          headcount rules.
+          This app renders invitation pages from Google Sheets and accepts RSVPs with conditional
+          headcount rules for one wedding.
         </p>
         <div className="landing-links">
-          <Link href={`/${sampleWedding.weddingSlug}/${demoGuest.guestSlug}`}>Open demo invitation</Link>
-          <Link
-            href={{
-              pathname: "/admin",
-              query: { wedding: sampleWedding.weddingSlug }
-            }}
-          >
-            Open admin summary
-          </Link>
+          <Link href={`/${demoGuest.guestSlug}`}>Open demo invitation</Link>
+          <Link href="/admin">Open admin summary</Link>
         </div>
       </div>
     </main>

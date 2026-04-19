@@ -3,7 +3,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "Wedding Invitation",
-  description: "Reusable wedding invitation website with guest RSVP support."
+  description: "Wedding invitation website with guest RSVP support."
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {

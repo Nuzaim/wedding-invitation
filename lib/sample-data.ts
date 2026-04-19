@@ -1,7 +1,6 @@
 import type { GuestInvite, RsvpRecord, WeddingConfig } from "@/lib/types";
 
 export const sampleWedding: WeddingConfig = {
-  weddingSlug: "ali-fathima",
   inviteTitle: "Exclusive Invitation For",
   inviteSubtitle: "Together with their families",
   guestHonorLine: "Request the honor of your presence",
@@ -25,7 +24,6 @@ export const sampleWedding: WeddingConfig = {
 
 export const sampleGuests: GuestInvite[] = [
   {
-    weddingSlug: "ali-fathima",
     guestSlug: "ameer",
     guestName: "Ameer Pappali",
     maxHeadcount: 3,
@@ -33,7 +31,6 @@ export const sampleGuests: GuestInvite[] = [
     active: true
   },
   {
-    weddingSlug: "ali-fathima",
     guestSlug: "demo-guest",
     guestName: "Demo Guest",
     maxHeadcount: 1,

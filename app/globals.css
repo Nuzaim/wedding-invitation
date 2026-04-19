@@ -76,13 +76,37 @@ a {
 
 .invitation-shell {
   color: var(--text-main);
+  min-height: 100dvh;
+  padding: clamp(10px, 2vh, 20px) 12px;
+  overflow: hidden;
 }
 
 .invitation-card {
-  max-width: 560px;
-  padding: 28px 20px 30px;
+  max-width: 900px;
+  max-height: calc(100dvh - 24px);
+  padding: clamp(16px, 2.5vh, 26px) clamp(14px, 2vw, 22px);
   position: relative;
   overflow: hidden;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: 14px;
+  row-gap: 8px;
+  align-content: start;
+}
+
+.invitation-card > .eyebrow,
+.invitation-card > .guest-name,
+.invitation-card > .family-grid,
+.invitation-card > .honor-line,
+.invitation-card > .date-card,
+.invitation-card > .alt-calendar,
+.invitation-card > .venue-block {
+  grid-column: 1 / -1;
+}
+
+.invitation-card > .section-block {
+  margin-top: 6px;
+  padding-top: 12px;
 }
 
 .invitation-card::before {
@@ -107,14 +131,14 @@ a {
 }
 
 .eyebrow.small {
-  margin-top: 6px;
+  margin-top: 2px;
 }
 
 .guest-name {
-  margin: 18px 0 20px;
+  margin: 6px 0 8px;
   text-align: center;
   color: var(--accent);
-  font-size: clamp(2rem, 6vw, 3.5rem);
+  font-size: clamp(1.8rem, 4.3vh, 3.1rem);
   font-weight: 500;
   line-height: 1;
 }
@@ -122,23 +146,23 @@ a {
 .family-grid {
   display: grid;
   grid-template-columns: 1fr auto 1fr;
-  gap: 16px;
+  gap: 10px;
   align-items: center;
-  margin: 24px 0;
+  margin: 10px 0;
 }
 
 .family-grid h2 {
   margin: 0;
   text-align: center;
-  font-size: clamp(2rem, 5vw, 3rem);
+  font-size: clamp(1.55rem, 3.3vh, 2.4rem);
   font-weight: 500;
   line-height: 0.95;
 }
 
 .family-grid p {
-  margin: 10px 0 0;
+  margin: 6px 0 0;
   text-align: center;
-  font-size: 1rem;
+  font-size: 0.92rem;
   color: var(--accent);
 }
 
@@ -149,7 +173,7 @@ a {
 }
 
 .honor-line {
-  margin: 26px 0 18px;
+  margin: 8px 0 6px;
 }
 
 .date-card {
@@ -162,7 +186,7 @@ a {
 }
 
 .date-card > div {
-  padding: 16px 12px;
+  padding: 10px 10px;
   text-align: center;
 }
 
@@ -186,9 +210,9 @@ a {
 .date-number {
   display: grid;
   place-items: center;
-  min-width: 94px;
+  min-width: 76px;
   border-inline: 1px solid rgba(127, 155, 126, 0.2);
-  font-size: clamp(3rem, 10vw, 4.5rem);
+  font-size: clamp(2.2rem, 5.1vh, 4.1rem);
   color: var(--accent);
   font-weight: 700;
   line-height: 1;
@@ -207,12 +231,12 @@ a {
 }
 
 .alt-calendar {
-  margin-top: 14px;
+  margin-top: 4px;
   color: var(--accent);
 }
 
 .venue-block {
-  margin-top: 18px;
+  margin-top: 4px;
   text-align: center;
 }
 
@@ -221,33 +245,33 @@ a {
   color: var(--accent);
   text-transform: uppercase;
   letter-spacing: 0.18em;
-  font-size: 1.35rem;
+  font-size: clamp(1rem, 2.2vh, 1.2rem);
 }
 
 .section-block {
-  margin-top: 28px;
-  padding-top: 20px;
+  margin-top: 16px;
+  padding-top: 14px;
   border-top: 1px solid rgba(127, 155, 126, 0.18);
 }
 
 .countdown-grid {
-  margin-top: 18px;
+  margin-top: 10px;
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 10px;
+  gap: 8px;
 }
 
 .countdown-box {
   border-radius: 14px;
   border: 1px solid rgba(127, 155, 126, 0.2);
   background: rgba(255, 255, 255, 0.95);
-  padding: 14px 8px;
+  padding: 10px 6px;
   text-align: center;
 }
 
 .countdown-box strong {
   display: block;
-  font-size: 1.8rem;
+  font-size: clamp(1.3rem, 2.6vh, 1.65rem);
 }
 
 .countdown-box span {
@@ -261,7 +285,7 @@ a {
 }
 
 .headcount-panel {
-  margin-top: 18px;
+  margin-top: 10px;
 }
 
 .headcount-label {
@@ -278,13 +302,13 @@ a {
 .headcount-input {
   display: block;
   width: 100%;
-  max-width: 180px;
+  max-width: 150px;
   margin: 0 auto;
-  padding: 14px 16px;
+  padding: 10px 12px;
   border-radius: 14px;
   border: 1px solid rgba(127, 155, 126, 0.26);
   text-align: center;
-  font-size: 1.15rem;
+  font-size: 1rem;
   background: rgba(255, 255, 255, 0.92);
 }
 
@@ -293,12 +317,12 @@ a {
 }
 
 .headcount-help {
-  margin-top: 10px;
-  font-size: 0.84rem;
+  margin-top: 8px;
+  font-size: 0.76rem;
 }
 
 .saved-state {
-  margin-top: 16px;
+  margin-top: 10px;
   display: grid;
   gap: 6px;
   justify-items: center;
@@ -309,29 +333,29 @@ a {
 }
 
 .state-text {
-  margin-top: 14px;
-  font-size: 0.92rem;
+  margin-top: 10px;
+  font-size: 0.82rem;
 }
 
 .error-text {
-  margin-top: 14px;
+  margin-top: 10px;
   color: #c65959;
-  font-size: 0.92rem;
+  font-size: 0.82rem;
 }
 
 .rsvp-actions {
-  margin-top: 18px;
+  margin-top: 10px;
   display: grid;
-  gap: 12px;
+  gap: 8px;
 }
 
 .rsvp-button {
   display: grid;
   grid-template-columns: auto 1fr;
-  gap: 14px;
+  gap: 10px;
   align-items: center;
-  padding: 18px 18px;
-  border-radius: 18px;
+  padding: 12px;
+  border-radius: 14px;
   border: 1px solid rgba(127, 155, 126, 0.24);
   background: rgba(255, 255, 255, 0.94);
   text-align: left;
@@ -371,13 +395,13 @@ a {
 .button-icon {
   display: grid;
   place-items: center;
-  width: 44px;
-  height: 44px;
+  width: 36px;
+  height: 36px;
   border-radius: 999px;
   background: rgba(127, 155, 126, 0.12);
   color: var(--accent);
   font-family: Arial, sans-serif;
-  font-size: 1.5rem;
+  font-size: 1.3rem;
 }
 
 .rsvp-button.decline .button-icon {
@@ -435,7 +459,19 @@ a {
 
 @media (max-width: 640px) {
   .invitation-card {
+    max-height: none;
+    overflow: visible;
+    grid-template-columns: 1fr;
     padding: 22px 14px 24px;
+  }
+
+  .invitation-shell {
+    overflow: visible;
+  }
+
+  .invitation-card > .section-block {
+    margin-top: 16px;
+    padding-top: 16px;
   }
 
   .family-grid {

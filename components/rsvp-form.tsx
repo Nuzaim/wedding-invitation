@@ -48,7 +48,6 @@ export function RsvpForm({ wedding, guest, existingRsvp }: Props) {
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
-          weddingSlug: wedding.weddingSlug,
           guestSlug: guest.guestSlug,
           status,
           headcount
