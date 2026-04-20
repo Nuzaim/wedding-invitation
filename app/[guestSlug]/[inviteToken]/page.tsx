@@ -68,14 +68,19 @@ export default async function InvitationPage({ params }: Props) {
         <div className="invitation-content">
           <div className="invitation-columns">
             <div className="invitation-left">
-              <Image
-                src="/floral-ornament.png"
-                alt=""
-                aria-hidden="true"
-                width={1024}
-                height={512}
-                className="invitation-ornament invitation-ornament-top"
-              />
+              <div className="ornament-bismillah-wrap">
+                <Image
+                  src="/floral-ornament.png"
+                  alt=""
+                  aria-hidden="true"
+                  width={1024}
+                  height={512}
+                  className="invitation-ornament invitation-ornament-top"
+                />
+                <p className="bismillah" lang="ar" dir="rtl">
+                  بِسْمِ ٱللَّٰهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ
+                </p>
+              </div>
 
               <p className="eyebrow">{wedding.inviteTitle}</p>
               <h1 className="guest-name">{guest.guestName}</h1>

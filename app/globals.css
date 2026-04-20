@@ -178,6 +178,12 @@ a {
   margin-bottom: 18px;
 }
 
+.ornament-bismillah-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
 .invitation-footer {
   margin-top: 26px;
 }
@@ -207,6 +213,15 @@ a {
 
 .eyebrow.small {
   margin-top: 2px;
+}
+
+.bismillah {
+  margin: -8px 0 10px;
+  text-align: center;
+  font-size: clamp(1rem, 2.1vw, 1.3rem);
+  line-height: 1.2;
+  font-family: var(--font-noto-sans-arabic), serif;
+  color: var(--accent);
 }
 
 .guest-name {
@@ -583,10 +598,19 @@ a {
 @media (max-width: 640px) {
   .invitation-card {
     padding: 20px 12px 22px;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    backdrop-filter: none;
   }
 
   .invitation-shell {
     padding: 14px 8px 20px;
+    background: none;
+  }
+
+  .invitation-inner-border {
+    display: none;
   }
 
   .family-grid {
@@ -612,6 +636,10 @@ a {
 
   .invitation-ornament {
     width: min(220px, 72%);
+  }
+
+  .date-card {
+    margin-inline: 4px;
   }
 
   .section-block {
