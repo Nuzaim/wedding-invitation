@@ -26,9 +26,9 @@ export default async function InvitationPage({ params }: Props) {
 
   const { wedding, guest, existingRsvp } = data;
 
-  // if (!isInviteTokenValid(guest.guestName, inviteToken)) {
-  //   notFound();
-  // }
+  if (!isInviteTokenValid(guest.guestName, inviteToken)) {
+    notFound();
+  }
 
   const eventDate = formatEventDate(wedding.eventDateIso);
   const countdown = getCountdownParts(wedding.eventDateIso);
