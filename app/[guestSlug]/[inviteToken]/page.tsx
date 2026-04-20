@@ -6,8 +6,6 @@ import { RsvpForm } from "@/components/rsvp-form";
 import { isInviteTokenValid } from "@/lib/invite-signature";
 import { getInvitePageData } from "@/lib/google-sheets";
 import { formatEventDate, getCountdownParts } from "@/lib/utils";
-import floralOrnament from "@/lovable/floral-ornament.png";
-import botanicalSide from "@/lovable/botanical-side.png";
 
 type Props = {
   params: Promise<{
@@ -48,15 +46,19 @@ export default async function InvitationPage({ params }: Props) {
     >
       <div className="invitation-dots" aria-hidden="true" />
       <Image
-        src={botanicalSide}
+        src="/botanical-side.png"
         alt=""
         aria-hidden="true"
+        width={768}
+        height={1536}
         className="invitation-botanical invitation-botanical-left"
       />
       <Image
-        src={botanicalSide}
+        src="/botanical-side.png"
         alt=""
         aria-hidden="true"
+        width={768}
+        height={1536}
         className="invitation-botanical invitation-botanical-right"
       />
       <div className="invitation-top-wash" aria-hidden="true" />
@@ -67,9 +69,11 @@ export default async function InvitationPage({ params }: Props) {
           <div className="invitation-columns">
             <div className="invitation-left">
               <Image
-                src={floralOrnament}
+                src="/floral-ornament.png"
                 alt=""
                 aria-hidden="true"
+                width={1024}
+                height={512}
                 className="invitation-ornament invitation-ornament-top"
               />
 
@@ -95,9 +99,11 @@ export default async function InvitationPage({ params }: Props) {
 
               <footer className="invitation-footer invitation-footer-desktop">
                 <Image
-                  src={floralOrnament}
+                  src="/floral-ornament.png"
                   alt=""
                   aria-hidden="true"
+                  width={1024}
+                  height={512}
                   className="invitation-ornament invitation-ornament-bottom"
                 />
               </footer>
@@ -135,7 +141,14 @@ export default async function InvitationPage({ params }: Props) {
                 </a>
               </div>
 
-              <Image src={floralOrnament} alt="" aria-hidden="true" className="invitation-ornament" />
+              <Image
+                src="/floral-ornament.png"
+                alt=""
+                aria-hidden="true"
+                width={1024}
+                height={512}
+                className="invitation-ornament"
+              />
 
               <section className="section-block invitation-countdown-block">
                 <p className="section-kicker">Countdown To Reception</p>
@@ -153,9 +166,11 @@ export default async function InvitationPage({ params }: Props) {
 
           <footer className="invitation-footer invitation-footer-mobile">
             <Image
-              src={floralOrnament}
+              src="/floral-ornament.png"
               alt=""
               aria-hidden="true"
+              width={1024}
+              height={512}
               className="invitation-ornament invitation-ornament-bottom"
             />
           </footer>
