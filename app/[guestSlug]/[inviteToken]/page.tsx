@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import type { Metadata } from "next";
 import type { CSSProperties } from "react";
 import Image from "next/image";
 import { Countdown } from "@/components/countdown";
@@ -6,6 +7,13 @@ import { RsvpForm } from "@/components/rsvp-form";
 import { isInviteTokenValid } from "@/lib/invite-signature";
 import { getInvitePageData } from "@/lib/google-sheets";
 import { formatEventDate, getCountdownParts } from "@/lib/utils";
+
+export const metadata: Metadata = {
+  robots: {
+    index: false,
+    follow: false
+  }
+};
 
 type Props = {
   params: Promise<{
@@ -101,6 +109,17 @@ export default async function InvitationPage({ params }: Props) {
                   <p>{wedding.brideFamily}</p>
                 </div>
               </div>
+
+              <blockquote className="hadith-block">
+                <p className="hadith-text" lang="ar" dir="rtl">
+                  بَارَكَ اللَّهُ لَكَ وَبَارَكَ عَلَيْكَ وَجَمَعَ بَيْنَكُمَا فِي خَيْرٍ
+                </p>
+                <p className="hadith-text">Bārakallāhu laka wa bāraka ʿalayka wa jamaʿa baynakumā fī khayr</p>
+                <p className="hadith-text">
+                  May Allah bless you, and shower His blessings upon you, and join you together in goodness.
+                </p>
+                <cite className="hadith-source">— Sunan Abi Dawud</cite>
+              </blockquote>
 
               <footer className="invitation-footer invitation-footer-desktop">
                 <Image

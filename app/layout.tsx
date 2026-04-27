@@ -1,11 +1,18 @@
 import type { Metadata } from "next";
-import { Noto_Sans_Arabic } from "next/font/google";
+import { Noto_Sans_Arabic, Cormorant_Garamond } from "next/font/google";
 import "./globals.css";
 
 const notoSansArabic = Noto_Sans_Arabic({
   subsets: ["arabic"],
   weight: ["400", "500", "700"],
   variable: "--font-noto-sans-arabic"
+});
+
+const cormorantGaramond = Cormorant_Garamond({
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700"],
+  style: ["normal", "italic"],
+  variable: "--font-cormorant"
 });
 
 export const metadata: Metadata = {
@@ -16,7 +23,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en">
-      <body className={notoSansArabic.variable}>{children}</body>
+      <body className={`${notoSansArabic.variable} ${cormorantGaramond.variable}`}>{children}</body>
     </html>
   );
 }
