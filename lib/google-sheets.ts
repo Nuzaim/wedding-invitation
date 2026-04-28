@@ -12,6 +12,40 @@ import { parseBoolean, parseNumber } from "@/lib/utils";
 
 type SheetRow = Record<string, string>;
 
+const normalizeSlug = (value: string | undefined) => (value ?? "").trim().toLowerCase();
+const normalizeStatus = (value: string | undefined) => (value ?? "").trim().toLowerCase();
+
+const toTimestamp = (value: string | undefined) => {
+  if (!value) {
+    return 0;
+  }
+
+  const parsed = Date.parse(value);
+  return Number.isNaN(parsed) ? 0 : parsed;
+};
+
+const dedupeRsvps = (records: RsvpRecord[]) => {
+  const latestByGuest = new Map<string, RsvpRecord>();
+
+  for (const record of records) {
+    const existing = latestByGuest.get(record.guestSlug);
+
+    if (!existing) {
+      latestByGuest.set(record.guestSlug, record);
+      continue;
+    }
+
+    const existingTimestamp = toTimestamp(existing.submittedAt);
+    const recordTimestamp = toTimestamp(record.submittedAt);
+
+    if (recordTimestamp >= existingTimestamp) {
+      latestByGuest.set(record.guestSlug, record);
+    }
+  }
+
+  return Array.from(latestByGuest.values());
+};
+
 const RANGES = {
   weddings: process.env.GOOGLE_SHEETS_WEDDINGS_RANGE ?? "Weddings!A:Z",
   guests: process.env.GOOGLE_SHEETS_GUESTS_RANGE ?? "Guests!A:Z",
@@ -43,7 +77,10 @@ function getSheetsClient() {
   return google.sheets({ version: "v4", auth });
 }
 
-async function getRows(range: string): Promise<Array<{ rowNumber: number; row: SheetRow }>> {
+async function getRows(
+  range: string,
+  fallbackHeaders?: string[]
+): Promise<Array<{ rowNumber: number; row: SheetRow }>> {
   if (!hasGoogleSheetsConfig()) {
     return [];
   }
@@ -63,16 +100,21 @@ async function getRows(range: string): Promise<Array<{ rowNumber: number; row: S
 
   const [headerRow, ...rows] = values;
   const headers = headerRow.map((value) => value.trim());
+  const hasHeader =
+    headers.some(Boolean) &&
+    (!fallbackHeaders || fallbackHeaders.every((header) => headers.includes(header)));
+  const resolvedHeaders = hasHeader ? headers : fallbackHeaders ?? headers;
+  const resolvedRows = hasHeader ? rows : values;
 
-  return rows.map((row, index) => {
+  return resolvedRows.map((row, index) => {
     const mappedRow: SheetRow = {};
 
-    headers.forEach((header, headerIndex) => {
+    resolvedHeaders.forEach((header, headerIndex) => {
       mappedRow[header] = row[headerIndex] ?? "";
     });
 
     return {
-      rowNumber: index + 2,
+      rowNumber: hasHeader ? index + 2 : index + 1,
       row: mappedRow
     };
   });
@@ -104,8 +146,8 @@ function mapWedding(row: SheetRow): WeddingConfig {
 
 function mapGuest(row: SheetRow): GuestInvite {
   return {
-    guestSlug: row.guestSlug,
-    guestName: row.guestName,
+    guestSlug: normalizeSlug(row.guestSlug),
+    guestName: (row.guestName ?? "").trim(),
     maxHeadcount: parseNumber(row.maxHeadcount, 1),
     groupLabel: row.groupLabel || undefined,
     active: parseBoolean(row.active, true)
@@ -113,10 +155,11 @@ function mapGuest(row: SheetRow): GuestInvite {
 }
 
 function mapRsvp(row: SheetRow, rowNumber?: number): RsvpRecord {
+  const status = normalizeStatus(row.status);
   return {
-    guestSlug: row.guestSlug,
-    guestName: row.guestName,
-    status: row.status === "declined" ? "declined" : "attending",
+    guestSlug: normalizeSlug(row.guestSlug),
+    guestName: (row.guestName ?? "").trim(),
+    status: status === "declined" ? "declined" : "attending",
     headcount: parseNumber(row.headcount, 0),
     submittedAt: row.submittedAt,
     rowNumber
@@ -146,11 +189,18 @@ async function loadRsvps() {
     return sampleRsvps;
   }
 
-  const rows = await getRows(RANGES.rsvps);
+  const rows = await getRows(RANGES.rsvps, [
+    "guestSlug",
+    "guestName",
+    "status",
+    "headcount",
+    "submittedAt"
+  ]);
   return rows.map(({ row, rowNumber }) => mapRsvp(row, rowNumber));
 }
 
 export async function getInvitePageData(guestSlug: string): Promise<InvitePageData | null> {
+  const normalizedSlug = normalizeSlug(guestSlug);
   const [weddings, guests, rsvps] = await Promise.all([
     loadWeddings(),
     loadGuests(),
@@ -158,13 +208,14 @@ export async function getInvitePageData(guestSlug: string): Promise<InvitePageDa
   ]);
 
   const wedding = weddings.find((item) => item.active);
-  const guest = guests.find((item) => item.guestSlug === guestSlug && item.active);
+  const guest = guests.find((item) => item.guestSlug === normalizedSlug && item.active);
 
   if (!wedding || !guest) {
     return null;
   }
 
-  const existingRsvp = rsvps.find((item) => item.guestSlug === guestSlug) ?? null;
+  const existingRsvp =
+    dedupeRsvps(rsvps).find((item) => item.guestSlug === normalizedSlug) ?? null;
 
   return { wedding, guest, existingRsvp };
 }
@@ -183,10 +234,14 @@ export async function getWeddingDashboard(): Promise<DashboardSummary | null> {
   }
 
   const weddingGuests = guests.filter((guest) => guest.active);
-  const weddingRsvps = rsvps;
-  const attending = weddingRsvps.filter((rsvp) => rsvp.status === "attending");
-  const declined = weddingRsvps.filter((rsvp) => rsvp.status === "declined");
-  const pendingCount = Math.max(weddingGuests.length - weddingRsvps.length, 0);
+  const weddingRsvps = dedupeRsvps(rsvps);
+  const rsvpByGuest = new Map(weddingRsvps.map((rsvp) => [rsvp.guestSlug, rsvp]));
+  const rsvpsForGuests = weddingGuests
+    .map((guest) => rsvpByGuest.get(guest.guestSlug))
+    .filter((rsvp): rsvp is RsvpRecord => Boolean(rsvp));
+  const attending = rsvpsForGuests.filter((rsvp) => rsvp.status === "attending");
+  const declined = rsvpsForGuests.filter((rsvp) => rsvp.status === "declined");
+  const pendingCount = weddingGuests.filter((guest) => !rsvpByGuest.has(guest.guestSlug)).length;
 
   return {
     wedding,
@@ -207,14 +262,15 @@ export async function saveRsvp(submission: RsvpSubmission) {
   const sheets = getSheetsClient();
   const spreadsheetId = process.env.GOOGLE_SHEETS_SPREADSHEET_ID!;
   const existingRows = await getRows(RANGES.rsvps);
+  const normalizedSlug = normalizeSlug(submission.guestSlug);
   const matchingRow = existingRows.find(
-    ({ row }) => row.guestSlug === submission.guestSlug
+    ({ row }) => normalizeSlug(row.guestSlug) === normalizedSlug
   );
 
   const recordValues = [
-    submission.guestSlug,
-    submission.guestName,
-    submission.status,
+    normalizedSlug,
+    submission.guestName.trim(),
+    normalizeStatus(submission.status),
     String(submission.headcount),
     submission.submittedAt
   ];

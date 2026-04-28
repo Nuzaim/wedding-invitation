@@ -34,5 +34,3 @@ export function isInviteTokenValid(guestName: string, inviteToken: string) {
 
   return expected.length === provided.length && timingSafeEqual(expected, provided);
 }
-
-console.log(createInviteToken("Ameer Pappali"))
