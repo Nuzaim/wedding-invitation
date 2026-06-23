@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getInvitePageData, saveRsvp } from "@/lib/google-sheets";
+import { getInvitePageData, saveRsvp } from "@/lib/sheets";
 import { isInviteTokenValid } from "@/lib/invite-signature";
 import { rsvpSchema, validateRsvp } from "@/lib/rsvp";
 

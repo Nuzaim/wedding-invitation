@@ -5,7 +5,7 @@ import Image from "next/image";
 import { Countdown } from "@/components/countdown";
 import { RsvpForm } from "@/components/rsvp-form";
 import { isInviteTokenValid } from "@/lib/invite-signature";
-import { getInvitePageData } from "@/lib/google-sheets";
+import { getInvitePageData } from "@/lib/sheets";
 import { formatEventDate, getCountdownParts } from "@/lib/utils";
 
 export const metadata: Metadata = {
