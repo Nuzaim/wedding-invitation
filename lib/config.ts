@@ -1,5 +1,4 @@
 import { z } from "zod";
-import { join } from "node:path";
 
 export const env = z.object({
   GOOGLE_SHEETS_SPREADSHEET_ID: z.string().trim().optional(),
@@ -10,7 +9,7 @@ export const env = z.object({
   GOOGLE_SHEETS_RSVPS_RANGE: z.string().trim().default("RSVPs!A:E"),
   GOOGLE_SHEETS_PAGE_SIZE: z.coerce.number().int().positive().default(500),
   GOOGLE_SHEETS_SQLITE_CACHE_TTL_SECONDS: z.coerce.number().int().positive().default(60),
-  WEDDING_SQLITE_PATH: z.string().trim().default(join("/tmp", "wedding-invitation.sqlite")),
+  WEDDING_SQLITE_PATH: z.string().trim().default("/tmp/wedding-invitation.sqlite"),
   INVITE_TOKEN_SECRET: z.string().trim().min(1, "INVITE_TOKEN_SECRET is required"),
   ADMIN_BASIC_AUTH_USER: z.string().trim().optional(),
   ADMIN_BASIC_AUTH_PASS: z.string().trim().optional(),
