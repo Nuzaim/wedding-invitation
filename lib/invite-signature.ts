@@ -1,21 +1,12 @@
 import { createHmac, timingSafeEqual } from "crypto";
-
-function getInviteTokenSecret() {
-  const secret = process.env.INVITE_TOKEN_SECRET;
-
-  if (!secret) {
-    throw new Error("Missing INVITE_TOKEN_SECRET.");
-  }
-
-  return secret;
-}
+import { env } from "@/lib/config";
 
 function normalizeGuestName(guestName: string) {
   return guestName.trim().toLowerCase();
 }
 
 function toHexSignature(guestName: string) {
-  return createHmac("sha256", getInviteTokenSecret())
+  return createHmac("sha256", env.INVITE_TOKEN_SECRET)
     .update(normalizeGuestName(guestName), "utf8")
     .digest("hex");
 }

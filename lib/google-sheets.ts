@@ -1,7 +1,8 @@
 import { google } from "googleapis";
 import { mkdirSync } from "node:fs";
-import { dirname, join } from "node:path";
+import { dirname } from "node:path";
 import { DatabaseSync } from "node:sqlite";
+import { env, getSqliteCacheTtlMs, hasGoogleSheetsConfig } from "@/lib/config";
 import { sampleGuests, sampleRsvps, sampleWedding } from "@/lib/sample-data";
 import type {
   DashboardSummary,
@@ -34,9 +35,6 @@ type ParsedRange = {
   startRow: number;
   endRow?: number;
 };
-
-const DEFAULT_SHEETS_PAGE_SIZE = 500;
-const DEFAULT_SQLITE_CACHE_TTL_SECONDS = 60;
 
 const normalizeSlug = (value: string | undefined) => (value ?? "").trim().toLowerCase();
 const normalizeStatus = (value: string | undefined) => (value ?? "").trim().toLowerCase();
@@ -73,27 +71,14 @@ const dedupeRsvps = (records: RsvpRecord[]) => {
 };
 
 const RANGES = {
-  weddings: process.env.GOOGLE_SHEETS_WEDDINGS_RANGE ?? "Weddings!A:Z",
-  guests: process.env.GOOGLE_SHEETS_GUESTS_RANGE ?? "Guests!A:Z",
-  rsvps: process.env.GOOGLE_SHEETS_RSVPS_RANGE ?? "RSVPs!A:E"
+  weddings: env.GOOGLE_SHEETS_WEDDINGS_RANGE,
+  guests: env.GOOGLE_SHEETS_GUESTS_RANGE,
+  rsvps: env.GOOGLE_SHEETS_RSVPS_RANGE
 };
 
-const getConfiguredPositiveNumber = (value: string | undefined, fallback: number) => {
-  const parsed = Number.parseInt(value ?? "", 10);
-  return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback;
-};
+const getSheetsPageSize = () => env.GOOGLE_SHEETS_PAGE_SIZE;
 
-const getSheetsPageSize = () =>
-  getConfiguredPositiveNumber(process.env.GOOGLE_SHEETS_PAGE_SIZE, DEFAULT_SHEETS_PAGE_SIZE);
-
-const getSqliteCacheTtlMs = () =>
-  getConfiguredPositiveNumber(
-    process.env.GOOGLE_SHEETS_SQLITE_CACHE_TTL_SECONDS,
-    DEFAULT_SQLITE_CACHE_TTL_SECONDS
-  ) * 1000;
-
-const getSqlitePath = () =>
-  process.env.WEDDING_SQLITE_PATH ?? join("/tmp", "wedding-invitation.sqlite");
+const getSqlitePath = () => env.WEDDING_SQLITE_PATH;
 
 const parseCellReference = (value: string) => {
   const match = value.trim().match(/^([A-Z]+)?(\d+)?$/i);
@@ -238,19 +223,11 @@ function markCacheStale(dataset: SheetDataset) {
   ).run(dataset);
 }
 
-function hasGoogleSheetsConfig() {
-  return Boolean(
-    process.env.GOOGLE_SHEETS_SPREADSHEET_ID &&
-      process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL &&
-      process.env.GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY
-  );
-}
-
 function getSheetsClient() {
-  const clientEmail = process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL;
-  const privateKey = process.env.GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY?.replace(/\\n/g, "\n");
+  const clientEmail = env.GOOGLE_SERVICE_ACCOUNT_EMAIL;
+  const privateKey = env.GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY?.replace(/\\n/g, "\n");
 
-  if (!process.env.GOOGLE_SHEETS_SPREADSHEET_ID || !clientEmail || !privateKey) {
+  if (!env.GOOGLE_SHEETS_SPREADSHEET_ID || !clientEmail || !privateKey) {
     throw new Error("Missing Google Sheets credentials.");
   }
 
@@ -268,7 +245,7 @@ async function getRowsFromSheets(
   fallbackHeaders?: string[]
 ): Promise<Array<{ rowNumber: number; row: SheetRow }>> {
   const sheets = getSheetsClient();
-  const spreadsheetId = process.env.GOOGLE_SHEETS_SPREADSHEET_ID!;
+  const spreadsheetId = env.GOOGLE_SHEETS_SPREADSHEET_ID!;
   const parsedRange = parseRange(range);
   const pageSize = getSheetsPageSize();
   const rows: Array<{ rowNumber: number; row: SheetRow }> = [];
@@ -507,7 +484,7 @@ export async function saveRsvp(submission: RsvpSubmission) {
   }
 
   const sheets = getSheetsClient();
-  const spreadsheetId = process.env.GOOGLE_SHEETS_SPREADSHEET_ID!;
+  const spreadsheetId = env.GOOGLE_SHEETS_SPREADSHEET_ID!;
   const existingRows = await getRows("rsvps", RANGES.rsvps, [
     "guestSlug",
     "guestName",

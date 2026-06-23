@@ -1,5 +1,6 @@
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
+import { env } from "@/lib/config";
 
 function unauthorizedResponse() {
   return new NextResponse("Unauthorized", {
@@ -11,8 +12,8 @@ function unauthorizedResponse() {
 }
 
 export function middleware(request: NextRequest) {
-  const user = process.env.ADMIN_BASIC_AUTH_USER?.trim();
-  const pass = process.env.ADMIN_BASIC_AUTH_PASS?.trim();
+  const user = env.ADMIN_BASIC_AUTH_USER;
+  const pass = env.ADMIN_BASIC_AUTH_PASS;
 
   if (!user || !pass) {
     return unauthorizedResponse();
