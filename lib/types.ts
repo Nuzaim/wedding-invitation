@@ -1,7 +1,6 @@
 export type RsvpStatus = "attending" | "declined";
 
 export type WeddingConfig = {
-  weddingSlug: string;
   inviteTitle: string;
   inviteSubtitle: string;
   guestHonorLine: string;
@@ -24,7 +23,6 @@ export type WeddingConfig = {
 };
 
 export type GuestInvite = {
-  weddingSlug: string;
   guestSlug: string;
   guestName: string;
   maxHeadcount: number;
@@ -33,7 +31,6 @@ export type GuestInvite = {
 };
 
 export type RsvpRecord = {
-  weddingSlug: string;
   guestSlug: string;
   guestName: string;
   status: RsvpStatus;
@@ -49,7 +46,6 @@ export type InvitePageData = {
 };
 
 export type RsvpSubmission = {
-  weddingSlug: string;
   guestSlug: string;
   guestName: string;
   status: RsvpStatus;

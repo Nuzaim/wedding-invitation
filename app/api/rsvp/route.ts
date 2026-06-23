@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
-import { getInvitePageData, saveRsvp } from "@/lib/google-sheets";
+import { getInvitePageData, saveRsvp } from "@/lib/sheets";
+import { isInviteTokenValid } from "@/lib/invite-signature";
 import { rsvpSchema, validateRsvp } from "@/lib/rsvp";
 
 export async function POST(request: Request) {
@@ -10,11 +11,15 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Invalid RSVP payload." }, { status: 400 });
   }
 
-  const { weddingSlug, guestSlug, status, headcount } = parsed.data;
-  const inviteData = await getInvitePageData(weddingSlug, guestSlug);
+  const { guestSlug, inviteToken, status, headcount } = parsed.data;
+  const inviteData = await getInvitePageData(guestSlug);
 
   if (!inviteData) {
     return NextResponse.json({ error: "Invitation not found." }, { status: 404 });
+  }
+
+  if (!isInviteTokenValid(inviteData.guest.guestName, inviteToken)) {
+    return NextResponse.json({ error: "Invalid invitation token." }, { status: 403 });
   }
 
   const validationError = validateRsvp(status, headcount, inviteData.guest, inviteData.wedding);
@@ -24,7 +29,6 @@ export async function POST(request: Request) {
   }
 
   const record = await saveRsvp({
-    weddingSlug,
     guestSlug,
     guestName: inviteData.guest.guestName,
     status,

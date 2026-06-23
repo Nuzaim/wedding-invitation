@@ -8,6 +8,7 @@ import type { GuestInvite, RsvpRecord, WeddingConfig } from "@/lib/types";
 type Props = {
   wedding: WeddingConfig;
   guest: GuestInvite;
+  inviteToken: string;
   existingRsvp: RsvpRecord | null;
 };
 
@@ -17,7 +18,7 @@ type SavedState = {
   submittedAt?: string;
 };
 
-export function RsvpForm({ wedding, guest, existingRsvp }: Props) {
+export function RsvpForm({ wedding, guest, inviteToken, existingRsvp }: Props) {
   const [headcount, setHeadcount] = useState(existingRsvp?.headcount ?? 0);
   const [error, setError] = useState<string | null>(null);
   const [saved, setSaved] = useState<SavedState | null>(
@@ -34,9 +35,9 @@ export function RsvpForm({ wedding, guest, existingRsvp }: Props) {
   const uiState = getRsvpUiState(headcount, guest, wedding);
   const stateMessage = uiState.exceedsMax
     ? `Headcount cannot be more than ${guest.maxHeadcount} for this invitation.`
-    : headcount === 0
-      ? "Headcount is 0, so only decline RSVP is allowed."
-      : "Decline RSVP is disabled while headcount is above 0.";
+    : headcount > 0
+      ? "Decline RSVP is disabled while headcount is above 0."
+      : null;
 
   async function submit(status: "attending" | "declined") {
     setError(null);
@@ -48,8 +49,8 @@ export function RsvpForm({ wedding, guest, existingRsvp }: Props) {
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
-          weddingSlug: wedding.weddingSlug,
           guestSlug: guest.guestSlug,
+          inviteToken,
           status,
           headcount
         })
@@ -87,9 +88,7 @@ export function RsvpForm({ wedding, guest, existingRsvp }: Props) {
           }}
         />
         <p className="headcount-help">
-          {wedding.enforceMaxHeadcount
-            ? `0 means decline. 1-${guest.maxHeadcount} means attending.`
-            : "0 means decline. Any number above 0 means attending."}
+          0 means decline.
         </p>
       </div>
 
@@ -102,7 +101,9 @@ export function RsvpForm({ wedding, guest, existingRsvp }: Props) {
         </div>
       ) : null}
 
-      <p className={cn("state-text", uiState.exceedsMax && "error-text")}>{stateMessage}</p>
+      {stateMessage ? (
+        <p className={cn("state-text", uiState.exceedsMax && "error-text")}>{stateMessage}</p>
+      ) : null}
 
       {error ? <p className="error-text">{error}</p> : null}
 

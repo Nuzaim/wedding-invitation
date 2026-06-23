@@ -7,7 +7,7 @@ export default function NotFound() {
       <div className="landing-card">
         <p className="section-kicker">Invitation Not Found</p>
         <h1>This guest link is missing or inactive.</h1>
-        <p>Check the wedding slug and guest slug, or update the source data in Google Sheets.</p>
+        <p>Check the guest slug and token, or update the source data in Google Sheets.</p>
         <Link href={"/" as Route}>Back to home</Link>
       </div>
     </main>
