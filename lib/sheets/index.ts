@@ -1,4 +1,4 @@
-import { env, hasGoogleSheetsConfig } from "@/lib/config";
+import { env } from "@/lib/config";
 import { sampleGuests, sampleRsvps, sampleWedding } from "@/lib/sample-data";
 import type {
   DashboardSummary,
@@ -9,10 +9,10 @@ import type {
   WeddingConfig
 } from "@/lib/types";
 import { parseBoolean, parseNumber } from "@/lib/utils";
-import { upsertCachedRow, markCacheStale, type SheetRow } from "./cache";
-import { getRows, getSheetsClientForWrite, hasGoogleSheetsConfig as hasSheets } from "./client";
+import type { SheetRow } from "./cache";
+import { SheetsClient, hasGoogleSheetsConfig } from "./client";
 
-export { hasGoogleSheetsConfig } from "./client";
+export { hasGoogleSheetsConfig };
 
 const RANGES = {
   weddings: env.GOOGLE_SHEETS_WEDDINGS_RANGE,
@@ -101,29 +101,29 @@ function mapRsvp(row: SheetRow, rowNumber?: number): RsvpRecord {
 }
 
 async function loadWeddings() {
-  if (!hasSheets()) {
+  if (!hasGoogleSheetsConfig()) {
     return [sampleWedding];
   }
 
-  const rows = await getRows("weddings", RANGES.weddings);
+  const rows = await SheetsClient.getRows("weddings", RANGES.weddings);
   return rows.map(({ row }) => mapWedding(row));
 }
 
 async function loadGuests() {
-  if (!hasSheets()) {
+  if (!hasGoogleSheetsConfig()) {
     return sampleGuests;
   }
 
-  const rows = await getRows("guests", RANGES.guests);
+  const rows = await SheetsClient.getRows("guests", RANGES.guests);
   return rows.map(({ row }) => mapGuest(row));
 }
 
 async function loadRsvps() {
-  if (!hasSheets()) {
+  if (!hasGoogleSheetsConfig()) {
     return sampleRsvps;
   }
 
-  const rows = await getRows("rsvps", RANGES.rsvps, [
+  const rows = await SheetsClient.getRows("rsvps", RANGES.rsvps, [
     "guestSlug",
     "guestName",
     "status",
@@ -189,67 +189,11 @@ export async function getWeddingDashboard(): Promise<DashboardSummary | null> {
 }
 
 export async function saveRsvp(submission: RsvpSubmission) {
-  if (!hasSheets()) {
-    return { ...submission };
-  }
-
-  const sheets = getSheetsClientForWrite();
-  const spreadsheetId = env.GOOGLE_SHEETS_SPREADSHEET_ID!;
-  const existingRows = await getRows("rsvps", RANGES.rsvps, [
-    "guestSlug",
-    "guestName",
-    "status",
-    "headcount",
-    "submittedAt"
-  ]);
-  const normalizedSlug = normalizeSlug(submission.guestSlug);
-  const matchingRow = existingRows.find(
-    ({ row }) => normalizeSlug(row.guestSlug) === normalizedSlug
-  );
-
-  const recordValues = [
-    normalizedSlug,
-    submission.guestName.trim(),
-    normalizeStatus(submission.status),
-    String(submission.headcount),
-    submission.submittedAt
-  ];
-  const recordRow: SheetRow = {
-    guestSlug: recordValues[0],
-    guestName: recordValues[1],
-    status: recordValues[2],
-    headcount: recordValues[3],
-    submittedAt: recordValues[4]
-  };
-
-  if (matchingRow) {
-    await sheets.spreadsheets.values.update({
-      spreadsheetId,
-      range: `RSVPs!A${matchingRow.rowNumber}:E${matchingRow.rowNumber}`,
-      valueInputOption: "USER_ENTERED",
-      requestBody: {
-        values: [recordValues]
-      }
-    });
-    upsertCachedRow("rsvps", matchingRow.rowNumber, recordRow);
-  } else {
-    const response = await sheets.spreadsheets.values.append({
-      spreadsheetId,
-      range: "RSVPs!A:E",
-      valueInputOption: "USER_ENTERED",
-      requestBody: {
-        values: [recordValues]
-      }
-    });
-    const updatedRange = response.data.updates?.updatedRange;
-    const rowNumber = updatedRange?.match(/![A-Z]+(\d+):/i)?.[1];
-
-    if (rowNumber) {
-      upsertCachedRow("rsvps", Number.parseInt(rowNumber, 10), recordRow);
-    } else {
-      markCacheStale("rsvps");
-    }
-  }
-
-  return submission;
+  return SheetsClient.saveRsvp({
+    guestSlug: submission.guestSlug,
+    guestName: submission.guestName,
+    status: submission.status,
+    headcount: submission.headcount,
+    submittedAt: submission.submittedAt
+  });
 }
